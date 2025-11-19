@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 // In production, this dir should be created by the setup script or manually as per instructions.
 
 app.post('/api/add-url', (req, res) => {
-    const { runpodUrl } = req.body;
+    const { runpodUrl, customPath } = req.body;
 
     if (!runpodUrl) {
         return res.status(400).json({ error: 'runpodUrl is required' });
@@ -30,9 +30,24 @@ app.post('/api/add-url', (req, res) => {
         return res.status(400).json({ error: 'Invalid URL format' });
     }
 
-    // Generate 6-char ID
-    const id = crypto.randomBytes(4).toString('hex').slice(0, 6);
+    // Use custom path if provided, otherwise generate 6-char ID
+    let id;
+    if (customPath) {
+        // Validate custom path (alphanumeric, hyphens, underscores only)
+        if (!/^[a-zA-Z0-9_-]+$/.test(customPath)) {
+            return res.status(400).json({ error: 'Invalid customPath. Use only alphanumeric, hyphens, and underscores.' });
+        }
+        id = customPath;
+    } else {
+        id = crypto.randomBytes(4).toString('hex').slice(0, 6);
+    }
+
     const confFile = path.join(MAP_DIR, `${id}.conf`);
+
+    // Check if path already exists
+    if (fs.existsSync(confFile)) {
+        return res.status(409).json({ error: 'Path already exists. Choose a different customPath.' });
+    }
 
     // Extract host for headers
     let runpodHost = '';
