@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MAP_DIR = process.env.MAP_DIR || '/etc/nginx/mapped-urls';
-const DOMAIN = process.env.DOMAIN || 'gkgpt.in';
+const DOMAIN = process.env.DOMAIN || 'quantaicloud.com';
 
 // Middleware
 app.use(bodyParser.json());
@@ -76,7 +76,7 @@ app.post('/api/add-url', (req, res) => {
             return res.json({
                 success: true,
                 id: id,
-                publicUrl: `http://${DOMAIN}/${id}/`,
+                publicUrl: `https://${DOMAIN}/${id}/`,
                 targetUrl: runpodUrl,
                 message: 'Dry run successful'
             });
@@ -94,7 +94,7 @@ app.post('/api/add-url', (req, res) => {
             res.json({
                 success: true,
                 id: id,
-                publicUrl: `http://${DOMAIN}/${id}/`,
+                publicUrl: `https://${DOMAIN}/${id}/`,
                 targetUrl: runpodUrl
             });
         });
